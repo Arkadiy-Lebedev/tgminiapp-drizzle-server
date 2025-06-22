@@ -9,7 +9,8 @@
     "migrate": "drizzle-kit generate:mysql && ts-node src/db/migrations/run-migrations.ts",
     "lint": "eslint . --ext .ts",
     "migrate:generate": "drizzle-kit generate",
-    "migrate:run": "ts-node src/db/migrate.ts"
+    "migrate:run": "ts-node src/db/migrate.ts",
+    "migrate:prod": "node dist/src/db/migrate.js"
   },
   "author": "",
   "license": "ISC",
