@@ -9,9 +9,19 @@ import { config } from 'dotenv';
 
 
 async function runMigrations() {
-  const migrationsFolder = path.join(__dirname, 'migrations');
-  await migrate(db, { migrationsFolder });
-  console.log('Миграции успешно применены');
+  // const migrationsFolder = path.join(__dirname, 'migrations');
+  // await migrate(db, { migrationsFolder });
+  // console.log('Миграции успешно применены');
+
+  const migrationsFolder = path.resolve(process.cwd(), 'migrations');
+    
+  // Путь к файлу БД (в корне проекта)
+  const dbPath = path.resolve(process.cwd(), 'sqlite.db');
+  console.log(`Применение миграций к БД: ${dbPath}`);
+  await migrate(db, { 
+    migrationsFolder
+  });
+
 
   const allUsers = await db.select().from(users);
   console.log('Миграции успешно применены2' + allUsers);
