@@ -11,7 +11,7 @@ export const initialUser = async (nickName: string, name: string, chatId: number
       if (!chatId) {
         return console.log('Обязательные поля не заполнены');
       }
-      console.log(chatId)
+      console.log('чат id' + chatId);
       const user = await db.select().from(users).where(eq(users.userId, userId));
       console.log('chatId подключение прошло')
       console.log(user)
