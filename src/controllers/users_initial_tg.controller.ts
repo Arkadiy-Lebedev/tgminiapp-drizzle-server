@@ -1,4 +1,3 @@
-
 import { db } from '../db/connection';
 import { users } from '../db/schema';
 import { eq } from 'drizzle-orm';
