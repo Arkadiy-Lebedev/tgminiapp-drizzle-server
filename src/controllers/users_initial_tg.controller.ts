@@ -11,7 +11,7 @@ export const initialUser = async (nickName: string, name: string, chatId: number
       if (!chatId) {
         return console.log('Обязательные поля не заполнены');
       }
-      console.log('чат id' + chatId);
+console.log('чат id' + chatId);
       const user = await db.select().from(users).where(eq(users.userId, userId));
       console.log('chatId подключение прошло')
       console.log(user)
@@ -43,7 +43,14 @@ export const initialUser = async (nickName: string, name: string, chatId: number
     
   } catch (error) {
     // logger.error('Error creating user:', error);
-
+    console.error('Детали ошибки:', {
+      message: error,
+      stack: error,
+      query: {
+        table: users._.name,
+        condition: `userId = ${userId}`
+      }
+    });
     return console.log('Internal server error, ошибка инициализации');
   }
 };
