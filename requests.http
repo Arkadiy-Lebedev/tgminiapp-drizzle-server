@@ -1,5 +1,5 @@
-GET http://localhost:3000/api/users
-
+# GET http://localhost:3000/api/users
+GET https://my-test-bot.ru/api/users
 ###
 
 POST http://localhost:3000/api/users

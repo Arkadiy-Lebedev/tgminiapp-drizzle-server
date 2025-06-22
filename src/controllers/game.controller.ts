@@ -19,7 +19,7 @@ const user = await db
 .where(eq(users.userId, userId)); 
 
 //если нет такого юзера или билеты null то выдаем ошибку
-if(user.length==0 || !user[0].ticket){
+if(user.length==0 || user[0].ticket === null){
   res.status(500).json({ message: 'Server error. Not found' });
 return
 }
