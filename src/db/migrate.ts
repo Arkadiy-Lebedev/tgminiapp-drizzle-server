@@ -8,10 +8,13 @@ import { config } from 'dotenv';
 
 
 async function runMigrations() {
-  await migrate(db, {
-    migrationsFolder: 'src/db/migrations'
-  });
-  console.log('Migrations completed!');
+  const migrationsFolder = path.join(__dirname, 'migrations');
+  await migrate(db, { migrationsFolder });
+  console.log('Миграции успешно применены');
+  process.exit(0);
 }
 
-runMigrations().catch(console.error);
+runMigrations().catch((e) => {
+  console.error('Ошибка миграций:', e);
+  process.exit(1);
+});
