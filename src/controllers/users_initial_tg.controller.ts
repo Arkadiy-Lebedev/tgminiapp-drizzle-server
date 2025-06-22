@@ -43,11 +43,7 @@ console.log('чат id' + chatId);
     
   } catch (error) {
     // logger.error('Error creating user:', error);
-    console.error('Детали ошибки:', {
-      message: error,
 
-
-    });
-    return console.log('Internal server error, ошибка инициализации');
+    return console.log('Internal server error, ошибка инициализации' + " " + error);
   }
 };
