@@ -45,11 +45,8 @@ console.log('чат id' + chatId);
     // logger.error('Error creating user:', error);
     console.error('Детали ошибки:', {
       message: error,
-      stack: error,
-      query: {
-        table: users._.name,
-        condition: `userId = ${userId}`
-      }
+
+
     });
     return console.log('Internal server error, ошибка инициализации');
   }

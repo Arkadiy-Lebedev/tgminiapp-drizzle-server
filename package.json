@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "ts-node-dev src/app.ts",
     "build": "tsc && cp -r src/db/migrations dist/src/db",
+    "build2": "tsc",
     "start": "node dist/app.js",
     "migrate": "drizzle-kit generate:mysql && ts-node src/db/migrations/run-migrations.ts",
     "lint": "eslint . --ext .ts",
