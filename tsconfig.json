@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "NodeNext",
+      "outDir": "./dist",
+      "rootDir": ".",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "moduleResolution": "NodeNext",
+      "baseUrl": ".",
+      "paths": {
+        "@db/*": ["src/db/*"],
+        "@controllers/*": ["src/controllers/*"],
+        "@routes/*": ["src/routes/*"]
+      }
+    },
+    "include": ["src/**/*", "drizzle.config.ts"],
+    "exclude": ["node_modules"]
+  }
