@@ -1,5 +1,5 @@
 console.log('Файл connection.ts начал выполняться');
-process.exit(1); 
+
 
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
