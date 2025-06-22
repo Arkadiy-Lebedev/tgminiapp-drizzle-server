@@ -14,6 +14,8 @@ export const initialUser = async (nickName: string, name: string, chatId: number
       }
       console.log(chatId)
       const user = await db.select().from(users).where(eq(users.userId, userId));
+      console.log('chatId подключение прошло')
+      console.log(user)
       if(user.length!==0){
 //         const result = await db.select().from(users);
 // console.log(typeof result[0].createdAt); // Должно быть "number"
@@ -43,6 +45,6 @@ export const initialUser = async (nickName: string, name: string, chatId: number
   } catch (error) {
     // logger.error('Error creating user:', error);
 
-    return console.log('Internal server error');
+    return console.log('Internal server error, ошибка инициализации');
   }
 };
