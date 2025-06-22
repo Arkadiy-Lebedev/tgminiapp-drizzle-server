@@ -16,7 +16,11 @@ const app = express();
 const PORT = process.env.SERVER_PORT || 3000;
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: 'https://testingbuild.ru/',  // Замените на ваш домен
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
