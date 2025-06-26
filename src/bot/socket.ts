@@ -1,15 +1,5 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import { createServer } from 'http';
-import { Server as SocketServer } from 'socket.io';
-import { db } from './db/connection';
-import userRouter from './routes/users.routes';
-import authRouter from './routes/auth.routes';
-import gameRouter from './routes/game.routes';
-import lidersRouter from './routes/liders.routes';
-import { createBot } from './bot/bot';
 
+import { Server, Socket } from 'socket.io';
 // Интерфейсы для игры
 interface Player {
   id: string;
@@ -31,11 +21,6 @@ interface GameRoom {
   gameStarted: boolean;
 }
 
-console.log(db);
-const app = express();
-const PORT = process.env.SERVER_PORT || 3000;
-const server = createServer(app);
-
 // Настройка Socket.io
 const io = new SocketServer(server, {
   cors: {
@@ -50,30 +35,6 @@ const cardValues = [
   '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼',
   '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔'
 ];
-
-// Middlewares
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-app.use(helmet());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Routes
-app.use('/api/users', userRouter);
-app.use('/api/game', gameRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/liders', lidersRouter);
-
-// Health check
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date() });
-});
-
-// Функции для игры
 function generateGameCards(): Card[] {
   const pairs = [...cardValues].sort(() => 0.5 - Math.random()).slice(0, 8);
   const cards = [...pairs, ...pairs]
@@ -86,27 +47,10 @@ function generateGameCards(): Card[] {
     .sort(() => Math.random() - 0.5);
   return cards;
 }
-
-const gameRoomsFree =  () => {
-let roomsFree:{roomId:string, name:string}[] = []
-for (const [key, room] of Object.entries(gameRooms)) {
-  if (room.players.length==1) {
-    roomsFree.push({roomId:key, name:room.players[0].username})
-  }
-}
-return roomsFree
-}
-
 function handleSocketConnection(socket: any) {
   console.log(`User connected: ${socket.id}`);
 
-  const updateListRooms = () => {
-      io.emit('updateData', {rooms:gameRoomsFree()});
-  }
-  updateListRooms()
-
-  socket.on('createRoom', (username: string) => {
-    console.log(1223)
+  socket.on('createGameRoom', (username: string) => {
     const roomId = Math.random().toString(36).substring(2, 8);
     gameRooms[roomId] = {
       players: [{ id: socket.id, username, score: 0 }],
@@ -114,31 +58,14 @@ function handleSocketConnection(socket: any) {
       currentPlayer: 0,
       gameStarted: false
     };
-
     socket.join(roomId);
-    // socket.emit('roomCreated', {rooms:Object.keys(gameRooms)});
-    io.emit('roomCreated', {rooms:gameRoomsFree()});
-    io.to(socket.id).emit('roomIdInCreate', {
-      id: roomId     
-     });
+    socket.emit('gameRoomCreated', roomId);
     console.log(`Game room created: ${roomId}`);
   });
 
-
-  socket.on('stopFind', (idRoom: string, callback:(response: { success: boolean }) => void) => {
-    console.log(idRoom)
-    delete gameRooms[idRoom];
-    console.log(gameRooms)
-    updateListRooms()
-    if (typeof callback === 'function') {
-      callback({ success: true });
-    }
-
-  });  
-
-  socket.on('joinRoom', ({ roomId, username }: { roomId: string; username: string }) => {
+  socket.on('joinGameRoom', ({ roomId, username }: { roomId: string; username: string }) => {
     const room = gameRooms[roomId];
-    console.log(44)
+    
     if (!room) {
       socket.emit('error', 'Game room not found');
       return;
@@ -151,7 +78,7 @@ function handleSocketConnection(socket: any) {
 
     room.players.push({ id: socket.id, username, score: 0 });
     socket.join(roomId);
-    io.to(roomId).emit('playerJoined', {players:room.players, roomId:roomId});
+    io.to(roomId).emit('playerJoined', room.players);
 
     if (room.players.length === 2) {
       room.gameStarted = true;
@@ -159,15 +86,13 @@ function handleSocketConnection(socket: any) {
         cards: room.cards,
         currentPlayer: room.currentPlayer
       });
-      updateListRooms()
     }
   });
 
   socket.on('flipCard', ({ roomId, cardId }: { roomId: string; cardId: number }) => {
-    console.log(roomId)
     const room = gameRooms[roomId];
     if (!room || !room.gameStarted) return;
-    console.log(77)
+
     const playerIndex = room.players.findIndex(p => p.id === socket.id);
     if (playerIndex !== room.currentPlayer) return;
 
@@ -226,7 +151,6 @@ function handleSocketConnection(socket: any) {
         
         if (room.players.length === 0) {
           delete gameRooms[roomId];
-          io.emit('roomCreated', {rooms:gameRoomsFree()});
         } else {
           io.to(roomId).emit('playerLeft', room.players);
           
@@ -239,14 +163,4 @@ function handleSocketConnection(socket: any) {
     }
   });
 }
-
-// Инициализация Socket.io
-io.on('connection', handleSocketConnection);
-
-// const bot = createBot();
-
-// Start server
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  console.log('Socket.io game server is ready');
-});
+return io.on('connection', handleSocketConnection);
