@@ -46,9 +46,24 @@ const io = new SocketServer(server, {
 
 // Игровые комнаты
 const gameRooms: Record<string, GameRoom> = {};
+let users:string[] = []
+// const cardValues = [
+//   '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼',
+//   '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔'
+// ];
 const cardValues = [
-  '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼',
-  '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔'
+  'https://testingbuild.ru/image/1.svg', 
+  'https://testingbuild.ru/image/2.svg', 
+  'https://testingbuild.ru/image/3.svg',
+  'https://testingbuild.ru/image/4.svg', 
+  'https://testingbuild.ru/image/5.svg', 
+  'https://testingbuild.ru/image/6.svg', 
+  'https://testingbuild.ru/image/7.svg', 
+  'https://testingbuild.ru/image/8.svg', 
+  'https://testingbuild.ru/image/9.svg', 
+  'https://testingbuild.ru/image/10.svg', 
+  'https://testingbuild.ru/image/11.svg', 
+  
 ];
 
 // Middlewares
@@ -99,6 +114,8 @@ return roomsFree
 
 function handleSocketConnection(socket: any) {
   console.log(`User connected: ${socket.id}`);
+  users.push(socket.id)
+  io.emit('updateUser', users);
 
   const updateListRooms = () => {
       io.emit('updateData', {rooms:gameRoomsFree()});
@@ -217,22 +234,32 @@ function handleSocketConnection(socket: any) {
 
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
+    users = users.filter(el => el !== socket.id)    
+    console.log(users)  
+    io.emit('updateUser', users);
+    
     for (const roomId in gameRooms) {
       const room = gameRooms[roomId];
       const playerIndex = room.players.findIndex(p => p.id === socket.id);
-      
+      console.log(playerIndex)
       if (playerIndex !== -1) {
         room.players.splice(playerIndex, 1);
-        
+        console.log(11)
         if (room.players.length === 0) {
           delete gameRooms[roomId];
-          io.emit('roomCreated', {rooms:gameRoomsFree()});
+          console.log(222)
+          io.emit('updateData', {rooms:gameRoomsFree()});
         } else {
-          io.to(roomId).emit('playerLeft', room.players);
+          delete gameRooms[roomId];
+          console.log(333)
+                 io.to(roomId).emit('playerLeft', room.players);
           
           if (room.gameStarted) {
+            console.log(444)
             room.gameStarted = false;
-            io.to(roomId).emit('gameInterrupted');
+                 io.to(roomId).emit('gameInterrupted');
+            io.emit('updateData', {rooms:gameRoomsFree()});
+       
           }
         }
       }

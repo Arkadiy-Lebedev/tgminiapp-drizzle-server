@@ -38,7 +38,7 @@ newWinStreak = user[0].winStreak + 1;
 
    await db
   .update(users)
-  .set({ updateVisit: currentDate.getTime(), winStreak: newWinStreak, ticket: user[0].ticket ?  user[0].ticket + newWinStreak : 1 })
+  .set({ updateVisit: currentDate.getTime(), winStreak: newWinStreak, ticket: user[0].ticket + newWinStreak })
   .where(eq(users.userId, userId));
 
   const updateUser = await db.select(

@@ -9,7 +9,7 @@ export const users = sqliteTable('users', {
   userId: int('userId'),
   chat: int('chat'),
   currentEnergy: int('currentEnergy'),
-  ticket: int('ticket'),
+  ticket: int('ticket').notNull(), 
   lastVisit: int('lastVisit'), 
  updateVisit: int('lastVisit').notNull(), 
  winStreak: int('winStreak').notNull(), 
