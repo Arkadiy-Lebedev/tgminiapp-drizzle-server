@@ -270,7 +270,7 @@ function handleSocketConnection(socket: any) {
 // Инициализация Socket.io
 io.on('connection', handleSocketConnection);
 
-// const bot = createBot();
+const bot = createBot();
 
 // Start server
 server.listen(PORT, () => {
