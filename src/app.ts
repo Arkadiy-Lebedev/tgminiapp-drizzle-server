@@ -8,6 +8,7 @@ import userRouter from './routes/users.routes';
 import authRouter from './routes/auth.routes';
 import gameRouter from './routes/game.routes';
 import lidersRouter from './routes/liders.routes';
+import messageRouter from './routes/message.routes';
 import { createBot } from './bot/bot';
 
 // Интерфейсы для игры
@@ -79,6 +80,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/users', userRouter);
+app.use('/api/message', messageRouter);
 app.use('/api/game', gameRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/liders', lidersRouter);
@@ -270,7 +272,9 @@ function handleSocketConnection(socket: any) {
 // Инициализация Socket.io
 io.on('connection', handleSocketConnection);
 
-const bot = createBot();
+
+
+export const bot = createBot();
 
 // Start server
 server.listen(PORT, () => {

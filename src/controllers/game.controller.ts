@@ -51,3 +51,46 @@ const updateUser = await db
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
+export const endGameFlipping = async (req: Request, res: Response) => {
+  try {
+
+    const { userId,energy } = req.body;
+console.log(req.body)
+
+const user = await db
+.select({
+  ticket: users.ticket,
+  currentEnergy:users.currentEnergy,
+})
+.from(users)
+.where(eq(users.userId, userId)); 
+
+//если нет такого юзера 
+if(user.length==0 ){
+  res.status(500).json({ message: 'Server error. Not found' });
+return
+}
+
+// добавляем энергию 
+  await db
+  .update(users)
+  .set({ currentEnergy:user[0].currentEnergy +energy})
+  .where(eq(users.userId, userId));
+
+
+const updateUser = await db
+.select({
+  ticket: users.ticket,
+  currentEnergy:users.currentEnergy,
+})
+.from(users)
+.where(eq(users.userId, userId)); 
+
+    res.status(200).json({ status: true, ticket:updateUser[0].ticket, currentEnergy:updateUser[0].currentEnergy });
+  } catch (error) {
+    // logger.error('Error updating user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
